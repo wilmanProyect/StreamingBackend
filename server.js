@@ -1,0 +1,1 @@
+const jwt = requiere('jsonwebtoken');
