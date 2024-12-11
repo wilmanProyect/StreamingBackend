@@ -7,7 +7,7 @@ const contentSchema = new mongoose.Schema({
     tipo: { type: String, enum: ['película', 'serie'], required: true },
     url: { type: String, required: true },
     portada: { type: String }, // URL a la imagen de portada
-    clasificacion: { type: String }, // Ejemplo: '+13'
+    clasificacion: { type: String  }, // Ejemplo: '+13'
     calificaciones: {
         promedio: { type: Number, default: 0 },
         votos: { type: Number, default: 0 }
