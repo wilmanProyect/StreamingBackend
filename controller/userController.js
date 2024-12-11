@@ -7,10 +7,10 @@ const generateToken = (id, rol) => {
 };
 
 // Registro de usuario
-const registerUser = async (req,res)=>{
+const registerUser = async (req, res) => {
     const {nombre,email,password,rol} = req.body;
     try{
-        const userExists = await User.find({email});
+        const userExists = await User.findOne({email});
         if(userExists){
             return res.status(400).json({message: 'El usuario ya existe'});
         }
