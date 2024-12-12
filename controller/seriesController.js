@@ -229,6 +229,29 @@ const deleteEpisode = async (req, res) => {
     }
 };
 
+const searchSeriesByTitle = async (req, res) => {
+    try {
+        const { titulo } = req.query;
+
+        if (!titulo) {
+            return res.status(400).json({ message: 'El título es obligatorio para realizar la búsqueda' });
+        }
+
+        // Buscar series cuyo título contenga el término (sin distinguir entre mayúsculas y minúsculas)
+        const series = await Content.find({
+            tipo: 'serie',
+            titulo: { $regex: titulo, $options: 'i' } // 'i' es para ignorar mayúsculas/minúsculas
+        });
+
+        if (series.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron series con ese título' });
+        }
+
+        res.status(200).json(series);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al buscar la serie', error: error.message });
+    }
+};
 module.exports = { 
     createSeries,
     getAllSeries,
@@ -238,5 +261,6 @@ module.exports = {
     updateSeries, 
     deleteSeries,
     updateEpisode,
-    deleteEpisode
+    deleteEpisode,
+    searchSeriesByTitle
 };
