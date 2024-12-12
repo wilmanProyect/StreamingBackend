@@ -3,22 +3,19 @@ const User = require('../model/userModel');
 
 // Proteccion de Rutas
 
-const protect = async (req, res, next )=> {
+const protect = async (req, res, next) => {
     let token;
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-        try{
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
             token = req.headers.authorization.split(' ')[1];
-
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            req.user = await User.findById(decoded.id).select('-password');
-            next()
-        }catch(error){
-            res.status(401),json({message: 'No autorizado, token fallidos'});
+            req.user = await User.findById(decoded.id).select('-password'); // Excluye la contraseña
+            next();
+        } catch (error) {
+            res.status(401).json({ message: 'No autorizado, token inválido' });
         }
-    }
-    if(!token){
-        res.status(401).json({message: 'No autorizado, no se proporcionó el token'})
+    } else {
+        res.status(401).json({ message: 'No autorizado, token no proporcionado' });
     }
 };
 

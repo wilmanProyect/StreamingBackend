@@ -100,4 +100,26 @@ const subscribeUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser , subscribeUser };
+const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password'); // Excluye la contraseña
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.status(200).json({
+            id: user._id,
+            nombre: user.nombre,
+            email: user.email,
+            estado: user.estado,
+            rol: user.rol,
+            premiumExpiresAt: user.premiumExpiresAt,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el perfil del usuario', error: error.message });
+    }
+};
+
+module.exports = { registerUser, loginUser , subscribeUser, getUserProfile  };
