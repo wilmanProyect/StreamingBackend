@@ -27,3 +27,6 @@ app.listen(port, () =>
 //Archivos 
 const uploadRoutes = require('./routes/uploadRoutes');
 app.use('/uploads', uploadRoutes);
+
+const seriesRoutes = require('./routes/seriesRoutes');
+app.use('/content',seriesRoutes);

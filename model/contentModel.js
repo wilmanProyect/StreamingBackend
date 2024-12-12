@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 const contentSchema = new mongoose.Schema({
     titulo: { type: String, required: true },
     descripcion: { type: String, required: true },
-    categoria: [{ type: String }], // Ejemplo: ['acción', 'comedia']
+    categorias: [{ type: String }], // Ejemplo: ['Acción', 'Drama']
     tipo: { type: String, enum: ['película', 'serie'], required: true },
-    url: { type: String, required: true },
-    portada: { type: String }, // URL a la imagen de portada
-    clasificacion: { type: String  }, // Ejemplo: '+13'
+    portada: { type: String, required: true }, // URL de la portada
+    clasificacion: { type: String, enum: ['+7', '+13', '+18'], required: true },
     calificaciones: {
         promedio: { type: Number, default: 0 },
         votos: { type: Number, default: 0 }
