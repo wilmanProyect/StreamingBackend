@@ -42,4 +42,14 @@ const creator = (req, res, next) => {
     }
 }
 
-module.exports = {protect, admin, creator}
+// Middleware para roles
+const role = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.rol)) {
+            return res.status(403).json({ message: 'No autorizado, acceso restringido.' });
+        }
+        next();
+    };
+};
+
+module.exports = {protect, admin, creator,role}

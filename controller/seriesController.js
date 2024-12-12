@@ -112,4 +112,131 @@ const getEpisodesBySeries = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener los episodios', error: error.message });
     }
 };
-module.exports = { createSeries, getAllSeries, getSeriesById, addEpisode, getEpisodesBySeries };
+
+const updateSeries = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { titulo, descripcion, categorias, clasificacion } = req.body;
+
+        const updatedData = {
+            ...(titulo && { titulo }),
+            ...(descripcion && { descripcion }),
+            ...(categorias && { categorias: categorias.split(',') }),
+            ...(clasificacion && { clasificacion }),
+        };
+
+        if (req.file) {
+            // Subir nueva portada a Cloudinary si se envía un archivo
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { resource_type: 'image' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+
+            updatedData.portada = result.secure_url;
+        }
+
+        const series = await Content.findByIdAndUpdate(id, updatedData, { new: true });
+
+        if (!series) {
+            return res.status(404).json({ message: 'Serie no encontrada' });
+        }
+
+        res.status(200).json({ message: 'Serie actualizada correctamente', series });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar la serie', error: error.message });
+    }
+};
+
+const deleteSeries = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Eliminar episodios relacionados
+        await Episode.deleteMany({ contenido: id });
+
+        // Eliminar la serie
+        const series = await Content.findByIdAndDelete(id);
+
+        if (!series) {
+            return res.status(404).json({ message: 'Serie no encontrada' });
+        }
+
+        res.status(200).json({ message: 'Serie y episodios eliminados correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar la serie', error: error.message });
+    }
+};
+
+const updateEpisode = async (req, res) => {
+    try {
+        const { id, episodeId } = req.params;
+        const { titulo, descripcion, numero, temporada } = req.body;
+
+        const updatedData = {
+            ...(titulo && { titulo }),
+            ...(descripcion && { descripcion }),
+            ...(numero && { numero }),
+            ...(temporada && { temporada }),
+        };
+
+        if (req.file) {
+            // Subir nuevo video a Cloudinary si se envía un archivo
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { resource_type: 'video' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+
+            updatedData.url = result.secure_url;
+        }
+
+        const episode = await Episode.findByIdAndUpdate(episodeId, updatedData, { new: true });
+
+        if (!episode) {
+            return res.status(404).json({ message: 'Episodio no encontrado' });
+        }
+
+        res.status(200).json({ message: 'Episodio actualizado correctamente', episode });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar el episodio', error: error.message });
+    }
+};
+
+const deleteEpisode = async (req, res) => {
+    try {
+        const { episodeId } = req.params;
+
+        const episode = await Episode.findByIdAndDelete(episodeId);
+
+        if (!episode) {
+            return res.status(404).json({ message: 'Episodio no encontrado' });
+        }
+
+        res.status(200).json({ message: 'Episodio eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el episodio', error: error.message });
+    }
+};
+
+module.exports = { 
+    createSeries,
+    getAllSeries,
+    getSeriesById, 
+    addEpisode, 
+    getEpisodesBySeries, 
+    updateSeries, 
+    deleteSeries,
+    updateEpisode,
+    deleteEpisode
+};
