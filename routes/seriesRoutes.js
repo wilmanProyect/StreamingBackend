@@ -11,7 +11,7 @@ const {
     updateEpisode,
     deleteEpisode  
 } = require('../controller/seriesController');
-const { protect, admin, creator, role } = require('../middleware/authMiddleware');
+const { protect, admin, creator, role, isPremium } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.get('/series/:id', protect, getSeriesById);

@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {type: String, required: true},
     estado: {type: String,enum: ['premiun','normal'], default:'normal'},
+    premiumExpiresAt: { type: Date },
     rol:{type: String, enum: ['admin','user','creator'], default: 'user'}
 }, { timestamps: true });
 

@@ -52,4 +52,18 @@ const role = (...roles) => {
     };
 };
 
-module.exports = {protect, admin, creator,role}
+const isPremium = (req, res, next) => {
+    if (req.user.estado === 'premium' && req.user.premiumExpiresAt > new Date()) {
+        return next(); // Continúa si el usuario aún tiene premium activo
+    }
+
+    // Si la suscripción ha expirado, actualizar el estado del usuario
+    req.user.estado = 'normal';
+    req.user.premiumExpiresAt = null;
+    req.user.save();
+
+    return res.status(403).json({ message: 'Tu suscripción premium ha expirado.' });
+};
+
+
+module.exports = {protect, admin, creator, role, isPremium}

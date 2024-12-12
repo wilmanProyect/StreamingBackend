@@ -1,9 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const userRoutes = require('./routes/userRoutes');
 require('dotenv').config();
-
 
 const app = express();
 app.use(cors());
@@ -18,6 +16,8 @@ mongoose.connect(url_db)
 
                     // Rutas
 //Usuario
+
+const userRoutes = require('./routes/userRoutes');
 app.use('/users', userRoutes);
 
 app.listen(port, () => 
@@ -30,3 +30,6 @@ app.use('/uploads', uploadRoutes);
 
 const seriesRoutes = require('./routes/seriesRoutes');
 app.use('/content',seriesRoutes);
+
+
+
