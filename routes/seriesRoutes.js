@@ -18,8 +18,8 @@ router.get('/series/:id', protect, getSeriesById);
 router.get('/series', protect, getAllSeries);
 router.get('/series/:id/episodes', protect, getEpisodesBySeries);
 
-router.post('/series', protect, role('admin', 'creator'), upload.single('portada'), createSeries);
-router.post('/series/:id/episodes', protect,role('admin', 'creator'),  upload.single('video'), addEpisode);
+router.post('/series', protect, creator, upload.single('portada'), createSeries);
+router.post('/series/:id/episodes', protect,creator,  upload.single('video'), addEpisode);
 
 router.put('/series/:id', protect, role('admin', 'creator'), upload.single('portada'), updateSeries);
 router.put('/series/:id/episodes/:episodeId', protect, role('admin', 'creator'), upload.single('video'), updateEpisode);
