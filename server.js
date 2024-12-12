@@ -24,9 +24,6 @@ app.listen(port, () =>
     console.log(`Servidor corriendo en el puerto http://localhost:${port}`)
 );
 
-//Archivos 
-const uploadRoutes = require('./routes/uploadRoutes');
-app.use('/uploads', uploadRoutes);
 
 const seriesRoutes = require('./routes/seriesRoutes');
 app.use('/content',seriesRoutes);
