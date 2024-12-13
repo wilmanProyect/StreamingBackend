@@ -47,21 +47,28 @@ const getAllSeries = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener las series', error: error.message });
     }
 };
-const getSeriesById = async (req, res) => {
-    try {
-        const { id } = req.params;
 
-        const series = await Content.findById(id);
-        if (!series) {
-            return res.status(404).json({ message: 'Serie no encontrada' });
+const searchSeriesByTitle = async (req, res) => {
+    const { titulo } = req.query;
+    try {
+        if (!titulo) {
+            return res.status(400).json({ message: 'El título es obligatorio para realizar la búsqueda' });
         }
 
-        // Obtener episodios relacionados
-        const episodes = await Episode.find({ contenido: id });
+        console.log('Título recibido:', titulo);
 
-        res.status(200).json({ series, episodes });
+        const series = await Content.find({
+            titulo: { $regex: titulo, $options: 'i' }
+        });
+
+        if (!series.length) {
+            return res.status(404).json({ message: 'No se encontraron series con ese título' });
+        }
+
+        res.status(200).json(series);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener la serie', error: error.message });
+        console.error('Error al buscar la serie:', error.message);
+        res.status(500).json({ message: 'Error al buscar la serie', error: error.message });
     }
 };
 
@@ -229,29 +236,7 @@ const deleteEpisode = async (req, res) => {
     }
 };
 
-const searchSeriesByTitle = async (req, res) => {
-    try {
-        const { titulo } = req.query;
 
-        if (!titulo) {
-            return res.status(400).json({ message: 'El título es obligatorio para realizar la búsqueda' });
-        }
-
-        // Buscar series cuyo título contenga el término (sin distinguir entre mayúsculas y minúsculas)
-        const series = await Content.find({
-            tipo: 'serie',
-            titulo: { $regex: titulo, $options: 'i' } // 'i' es para ignorar mayúsculas/minúsculas
-        });
-
-        if (series.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron series con ese título' });
-        }
-
-        res.status(200).json(series);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al buscar la serie', error: error.message });
-    }
-};
 module.exports = { 
     createSeries,
     getAllSeries,
