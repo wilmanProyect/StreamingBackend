@@ -10,7 +10,8 @@ const contentSchema = new mongoose.Schema({
     calificaciones: {
         promedio: { type: Number, default: 0 },
         votos: { type: Number, default: 0 }
-    }
+    },
+    creador: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
 module.exports =  mongoose.model('Content',contentSchema);

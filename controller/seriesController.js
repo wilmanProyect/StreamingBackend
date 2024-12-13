@@ -8,6 +8,10 @@ const createSeries = async (req, res) => {
         const file = req.file; // Archivo de portada
 
         if (!titulo || !descripcion || !clasificacion) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios: título, descripción o clasificación.' });
+        }
+
+        if (!file) {
             return res.status(400).json({ message: 'No se proporcionó la portada.' });
         }
 
@@ -30,7 +34,8 @@ const createSeries = async (req, res) => {
             categorias: categorias ? categorias.split(',') : [], // Convertir categorías separadas por comas en array
             tipo: 'serie',
             portada: result.secure_url,
-            clasificacion
+            clasificacion,
+            creador: req.user._id // Referencia al creador (usuario autenticado)
         });
 
         res.status(201).json({ message: 'Serie creada exitosamente', series });
@@ -235,17 +240,51 @@ const deleteEpisode = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el episodio', error: error.message });
     }
 };
+const getMovies = async (req, res) => {
+    try {
+        // Filtrar por tipo: 'película'
+        const movies = await Content.find({ tipo: 'película' });
 
+        if (!movies.length) {
+            return res.status(404).json({ message: 'No se encontraron películas' });
+        }
+
+        res.status(200).json(movies);
+    } catch (error) {
+        console.error('Error al obtener las películas:', error.message);
+        res.status(500).json({ message: 'Error al obtener las películas', error: error.message });
+    }
+};
+
+
+const getContentByCreator = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Verificar si el creador existe
+        const content = await Content.find({ creador: id });
+
+        if (!content.length) {
+            return res.status(404).json({ message: 'No se encontró contenido para este creador' });
+        }
+
+        res.status(200).json(content);
+    } catch (error) {
+        console.error('Error al obtener contenido del creador:', error.message);
+        res.status(500).json({ message: 'Error al obtener contenido del creador', error: error.message });
+    }
+};
 
 module.exports = { 
     createSeries,
-    getAllSeries,
-    getSeriesById, 
+    getAllSeries, 
     addEpisode, 
     getEpisodesBySeries, 
     updateSeries, 
     deleteSeries,
     updateEpisode,
     deleteEpisode,
-    searchSeriesByTitle
+    searchSeriesByTitle,
+    getMovies,
+    getContentByCreator
 };

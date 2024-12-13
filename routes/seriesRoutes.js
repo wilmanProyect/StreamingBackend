@@ -9,7 +9,9 @@ const {
     deleteSeries,
     updateEpisode,
     deleteEpisode,
-    searchSeriesByTitle 
+    searchSeriesByTitle,
+    getMovies,
+    getContentByCreator
 } = require('../controller/seriesController');
 const { protect, role, isPremium } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -17,6 +19,8 @@ const router = express.Router();
 router.get('/series', protect, getAllSeries);
 router.get('/series/:id/episodes', protect, getEpisodesBySeries);
 router.get('/series/title',protect, searchSeriesByTitle);
+router.get('/movies', protect, getMovies);
+router.get('/creator/:id/content', protect, getContentByCreator);
 
 router.post('/series', protect, role('creator'), upload.single('portada'), createSeries);
 router.post('/series/:id/episodes', protect,role('creator'),  upload.single('video'), addEpisode);
